@@ -1,6 +1,6 @@
 {
   "$schema": "https://mintlify.com/docs.json",
-  "theme": "willow",
+  "theme": "mint",
   "name": "WizzGift Developer Docs",
   "colors": { "primary": "#4C6EF5" },
   "navigation": {
