@@ -3,68 +3,57 @@ title: "Documentation"
 description: "AI-native, beautiful docs out-of-the-box."
 ---
 
-WizzGift lets you sell gift cards, vouchers, and mobile top-ups in a simple, developer-friendly way.  
+# Documentation
+
+WizzGift lets you sell gift cards, vouchers, and mobile top-ups in a simple, developer-friendly way.
 
 You can integrate WizzGift using a lightweight iframe or a full API integration.
 
-Use the sections below to choose the integration path that best fits your product.
+This documentation is organized to help you choose and implement the right approach quickly.
 
-\<Columns cols={2}\>
+---
 
-  \<Card
+## Get started
 
-    title="Get started"
+If you are new to WizzGift, start here:
 
-    href="/introduction"
+- [**Introduction**](/introduction) – What WizzGift is, key concepts, and how this documentation is structured.
 
-    icon="flag"
+---
 
-  \>
+## Iframe integration
 
-    Learn what WizzGift is, key concepts, and how the documentation is organized.
+Use the iframe integration if you want a fast, hosted checkout with minimal backend work.
 
-  \</Card\>
+- [**Iframe introduction**](/iframe/introduction) – High-level overview and when to use iframe.
+- [**Customization**](/iframe/customization) – Styling options, sizing, and configuration parameters.
+- [**Integration**](/iframe/integration) – Step-by-step guide to embedding the iframe in your product.
 
-  \<Card
+---
 
-    title="Iframe integration"
+## API integration
 
-    href="/iframe/introduction"
+Use the API integration if you need full control of the user experience and server-side logic.
 
-    icon="window"
+- [**API introduction**](/api-integration/introduction) – Authentication, base URL, and common patterns.
+- [**Products**](/api-integration/products) – How to list available products and retrieve product details.
+- [**Order**](/api-integration/order) – Creating orders, checking order status, and handling failures.
 
-  \>
+---
 
-    Embed a ready-made WizzGift checkout experience using a secure iframe.
+## Developer tools
 
-  \</Card\>
+Tools to help you operate WizzGift in production.
 
-  \<Card
+- [**Webhook**](/developer-tools/webhook) – Configure webhooks to receive order and status updates.
+- [**Errors**](/developer-tools/errors) – Error formats, common error codes, and debugging tips.
+- [**New product request**](/developer-tools/new-product-request) – How to request support for a new gift card or provider.
 
-    title="API integration"
-
-    href="/api-integration/introduction"
-
-    icon="code"
-
-  \>
-
-    Use our API to list products, create orders, and fully control the UX.
-
-  \</Card\>
-
-  \<Card
-
-    title="Developer tools"
-
-    href="/developer-tools/webhook"
-
-    icon="square-terminal"
-
-  \>
-
-    Configure webhooks, handle errors, and request new products directly from WizzGift.
-
-  \</Card\>
-
-\</Columns\>
+<Columns cols={2}>
+  <Card title="Intro" icon="sparkles" href="/introduction">
+    ### Introduction
+  </Card>
+  <Card title="New Card" icon="sparkles">
+    ### Quick Start
+  </Card>
+</Columns>
