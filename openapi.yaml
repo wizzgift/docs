@@ -376,6 +376,194 @@ paths:
               example:
                 error: "Product not found"
 
+  /b2b/place-order:
+    post:
+      tags:
+        - API Integration
+      summary: Place one or more product orders
+      description: |
+        Places an order for one or more products.
+
+        Constraints:
+        - Maximum **10** different items in a single request.
+        - Maximum **25** quantity per item.
+        - Each item must include:
+          - `slug` (product id, same as product `slug` from products API)
+          - `skuItemId` (ID of the SKU)
+          - `quantity`
+          - `amount`
+        - `requiredFields` is **optional**, but required if the product itself has required fields.
+      operationId: placeOrder
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PlaceOrderRequest'
+            example:
+              data:
+                - slug: "t-mobile-united-states"
+                  skuItemId: "US_TM_10_100"
+                  quantity: 1
+                  amount: 10
+                  requiredFields:
+                    - name: "mobile"
+                      value: "1203256458"
+      responses:
+        '200':
+          description: Order accepted and checkout created.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PlaceOrderResponse'
+              example:
+                success: true
+                id: "CHK-123456"
+                status: "pending"
+                totalPrice:
+                  USD: 10.199918400652795
+                  EUR: 8.853611949827732
+                  GBP: 7.7947545845553785
+                  AUD: 15.810804806874797
+                  CAD: 14.394141552871512
+                  INR: 909.0295185196178
+                  LTC: 0.12227918720437372
+                  BTC: 0.00011855065091697267
+                  USDC: 10.199918400652795
+                  USDT: 10.205276170642382
+                  XRP: 4.918112008800981
+                  XLM: 41.81896915684
+                totalAmount: 10
+                data:
+                  - slug: "t-mobile-united-states"
+                    skuItemId: "US_TM_10_100"
+                    quantity: 1
+                    amount: 10
+                    requiredFields:
+                      - name: "mobile"
+                        value: "1203256458"
+        '400':
+          description: Validation error (e.g. too many items, invalid quantity, etc.).
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              example:
+                error: "Max 10 items allowed; received 11"
+        '401':
+          description: Missing or invalid authorization header.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              example:
+                error: "Missing Authorization header"
+
+  /b2b/place-order/doPayment:
+    post:
+      tags:
+        - API Integration
+      summary: Confirm payment and proceed with order delivery
+      description: |
+        Confirms the payment for a previously created checkout and triggers order delivery.
+
+        Required fields:
+        - `checkoutId` – obtained from `/b2b/place-order`.
+        - `callback_url` – URL where WizzGift will POST the final order status.
+        - `meta_data` – arbitrary JSON object, returned unchanged in the callback.
+      operationId: placeOrderDoPayment
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PlaceOrderDoPaymentRequest'
+            example:
+              checkoutId: "CHK-123456"
+              callback_url: "https://merchant.example.com/wizzgift/order-callback"
+              meta_data:
+                user_id: "12345"
+                internal_order_id: "ORD-98765"
+                source: "wizzgift_api"
+      responses:
+        '200':
+          description: Payment request accepted.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PlaceOrderDoPaymentResponse'
+              example:
+                success: true
+        '400':
+          description: Payment could not be processed.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              examples:
+                insufficientBalance:
+                  summary: Insufficient balance
+                  value:
+                    error: "Insufficient balance"
+                checkoutNotFound:
+                  summary: Checkout not found
+                  value:
+                    error: "Checkout not found"
+                invalidCheckout:
+                  summary: Invalid checkout/order id
+                  value:
+                    error: "Checkout/Order not found, make sure valid checkout/order id is provided"
+        '401':
+          description: Missing or invalid authorization header.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              example:
+                error: "Missing Authorization header"
+
+      callbacks:
+        orderResult:
+          '{$request.body#/callback_url}':
+            post:
+              summary: Order completion callback from WizzGift
+              description: |
+                WizzGift will POST here when the order is completed (success or failure).
+
+                `meta_data` is returned exactly as it was sent in `/b2b/place-order/doPayment`.
+              requestBody:
+                required: true
+                content:
+                  application/json:
+                    schema:
+                      $ref: '#/components/schemas/PlaceOrderCallbackPayload'
+                    example:
+                      success: true
+                      status: "completed"
+                      orderId: "ORD-123456"
+                      checkoutId: "CHK-123456"
+                      currency: "USD"
+                      totalAmount: 10
+                      meta_data:
+                        user_id: "12345"
+                        internal_order_id: "ORD-98765"
+                        source: "wizzgift_api"
+              responses:
+                '200':
+                  description: Your server successfully acknowledged the callback.
+                  content:
+                    application/json:
+                      schema:
+                        type: object
+                        properties:
+                          received:
+                            type: boolean
+                            example: true
+
 components:
   securitySchemes:
     bearerAuth:
@@ -670,3 +858,183 @@ components:
           example: Missing Authorization header
       required:
         - error
+
+    PlaceOrderRequest:
+      type: object
+      properties:
+        data:
+          type: array
+          description: |
+            List of items to order.
+
+            - Maximum 10 items per request.
+          minItems: 1
+          maxItems: 10
+          items:
+            $ref: '#/components/schemas/PlaceOrderItem'
+      required:
+        - data
+
+    PlaceOrderItem:
+      type: object
+      properties:
+        slug:
+          type: string
+          description: Product slug (product id), same as `slug` from the products API.
+          example: "t-mobile-united-states"
+        skuItemId:
+          type: string
+          description: Identifier of the SKU item.
+          example: "US_TM_10_100"
+        quantity:
+          type: integer
+          description: |
+            Quantity of this item. Maximum allowed is 25.
+          minimum: 1
+          maximum: 25
+          example: 1
+        amount:
+          type: number
+          format: float
+          description: Amount per unit or total amount for this item (implementation-specific).
+          example: 10
+        requiredFields:
+          type: array
+          description: |
+            Only required if the product defines required fields.
+
+            If the product has no required fields, this property can be omitted.
+          items:
+            $ref: '#/components/schemas/PlaceOrderRequiredField'
+      required:
+        - slug
+        - skuItemId
+        - quantity
+        - amount
+
+    PlaceOrderRequiredField:
+      type: object
+      properties:
+        name:
+          type: string
+          description: Name of the required field.
+          example: "mobile"
+        value:
+          type: string
+          description: Value for the required field.
+          example: "1203256458"
+      required:
+        - name
+        - value
+
+    PlaceOrderResponse:
+      type: object
+      properties:
+        success:
+          type: boolean
+        id:
+          type: string
+          description: Checkout identifier (checkoutId).
+          example: "CHK-123456"
+        status:
+          type: string
+          description: Initial status of the checkout, usually `pending`.
+          example: "pending"
+        totalPrice:
+          type: object
+          description: |
+            Total price converted into multiple currencies.
+            Keys are currency codes (e.g. USD, EUR, BTC).
+          additionalProperties:
+            type: number
+            format: float
+          example:
+            USD: 10.199918400652795
+            EUR: 8.853611949827732
+        totalAmount:
+          type: integer
+          description: Total amount in USD.
+          example: 10
+        data:
+          type: array
+          description: Full data of each ordered item.
+          items:
+            $ref: '#/components/schemas/PlaceOrderItem'
+      required:
+        - success
+        - id
+        - status
+        - totalPrice
+        - totalAmount
+        - data
+
+    PlaceOrderDoPaymentRequest:
+      type: object
+      properties:
+        checkoutId:
+          type: string
+          description: Checkout identifier returned from `/b2b/place-order`.
+          example: "CHK-123456"
+        callback_url:
+          type: string
+          format: uri
+          description: Public URL to receive order completion callbacks.
+          example: "https://merchant.example.com/wizzgift/order-callback"
+        meta_data:
+          type: object
+          description: |
+            Arbitrary JSON object that will be returned unchanged in the callback.
+          additionalProperties: true
+      required:
+        - checkoutId
+        - callback_url
+        - meta_data
+
+    PlaceOrderDoPaymentResponse:
+      type: object
+      properties:
+        success:
+          type: boolean
+          description: Indicates if the payment was accepted successfully.
+          example: true
+      required:
+        - success
+
+
+    PlaceOrderCallbackPayload:
+      type: object
+      description: Payload sent to `callback_url` when the order is completed.
+      properties:
+        success:
+          type: boolean
+          description: Indicates whether the order was successfully completed.
+        status:
+          type: string
+          description: Final order status (e.g. `completed`, `failed`).
+          example: "completed"
+        orderId:
+          type: string
+          description: WizzGift order identifier.
+          example: "ORD-123456"
+        checkoutId:
+          type: string
+          description: Checkout identifier associated with this order.
+          example: "CHK-123456"
+        currency:
+          type: string
+          example: "USD"
+        totalAmount:
+          type: number
+          format: float
+          example: 10
+        meta_data:
+          type: object
+          description: |
+            The same object that was sent in `meta_data` of `/b2b/place-order/doPayment`.
+          additionalProperties: true
+      additionalProperties: true
+      required:
+        - success
+        - status
+        - checkoutId
+        - meta_data
