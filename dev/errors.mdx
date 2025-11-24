@@ -1,0 +1,147 @@
+---
+title: "Error Handling"
+description: "All WizzGift APIs follow a consistent pattern for successful and failed responses."
+sidebarTitle: "Errors"
+---
+
+- **Successful requests**
+  - HTTP status: `200 OK`
+  - Response body always includes:
+    - `success: true`
+- **Failed requests**
+  - HTTP status: `4xx` or `5xx`
+  - Response body includes:
+    - `error`: a string **or** an object with detailed information
+    - For some endpoints (e.g. `/b2b/place-order`), additional details may be returned under `validationResult` or as a structured object within `error`.
+
+---
+
+### Successful Response Format
+
+Example:
+
+```json
+{
+  "success": true,
+  "data": {
+    "...": "..."
+  }
+}
+```
+
+> The `data` field structure depends on the specific endpoint (for example: order details, product list, etc.).
+
+---
+
+### Generic Error Response Format
+
+For all endpoints, on validation or logic errors, the API returns a non-2xx HTTP status (e.g. `400`, `401`, `403`, `404`, `422`, `500`) with the following body:
+
+```json
+{
+  "error": "Descriptive error message"
+}
+```
+
+#### Example Error Messages
+
+```json
+{
+  "error": "Checkout/Order not found, make sure valid checkout/order id is provided"
+}
+```
+
+```json
+{
+  "error": "Insufficient balance"
+}
+```
+
+```json
+{
+  "error": "You can only checkout up to 10 items at a time"
+}
+```
+
+#### Fields
+
+| Field   | Type             | Description                                |
+| :------ | :--------------- | :----------------------------------------- |
+| `error` | string or object | Error message or structured error details. |
+
+---
+
+### Validation Errors (Place Order)
+
+For `/b2b/place-order`, the API may return more detailed validation information when the request fails input validation.
+
+In such cases:
+
+- HTTP status: typically `400 Bad Request` or `422 Unprocessable Entity`
+- Response body may include either:
+  - `validationResult` object alongside a generic `error` string, **or**
+  - `error` as an object that already contains the detailed validation information.
+
+#### Example 1: String `error` + `validationResult` object
+
+```json
+{
+  "error": "Validation failed",
+  "validationResult": {
+    "data[0].quantity": [
+      "Maximum quantity per item is 25"
+    ],
+    "data[1].requiredFields.mobile": [
+      "Mobile number is required",
+      "Mobile number format is invalid"
+    ]
+  }
+}
+```
+
+#### Example 2: Structured `error` object
+
+```json
+{
+  "error": {
+    "message": "Validation failed",
+    "details": {
+      "data[0].quantity": [
+        "Maximum quantity per item is 25"
+      ],
+      "data[0].slug": [
+        "Product slug is invalid or not found"
+      ]
+    }
+  }
+}
+```
+
+Fields
+
+| Field                    | Type             | Description                                                                 |
+| :----------------------- | :--------------- | :-------------------------------------------------------------------------- |
+| `error`                  | string or object | Generic error message, or object with a `message` and `details`.            |
+| `validationResult`       | object           | Optional. Key–value map of fields to an array of validation error messages. |
+| `validationResult.<key>` | array of string  | List of human-readable validation messages for that field.                  |
+
+> Keys such as `data[0].quantity` or `data[0].requiredFields.mobile` indicate the exact path of the invalid field in the request body.
+
+---
+
+### Recommended Client-Side Handling
+
+1. **Check HTTP status code**
+   - If status is `200 OK`, expect `success: true`.
+   - If status is `4xx` or `5xx`, treat as error.
+2. **Inspect **`error`
+   - If `error` is a string, display/log it directly.
+   - If `error` is an object, use `error.message` (if present) and inspect any nested detail fields.
+3. **Inspect **`validationResult`**(if present)** 
+   - Iterate over the keys to display per-field messages to the user.
+   - Use the keys (e.g. `data[0].quantity`) to map messages back to the corresponding fields in your UI.
+4. **Handle specific messages**
+   - For example:
+     - `"Insufficient balance"` → prompt user to top up or adjust order.
+     - `"You can only checkout up to 10 items at a time"` → adjust the number of items before retrying.
+     - `"Checkout/Order not found..."` → verify `checkoutId` before retry.

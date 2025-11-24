@@ -71,7 +71,6 @@
             "pages": [
               "dev/webhook",
               "dev/errors",
-              "dev/faqs",
               "dev/request-new-product"
             ]
           }

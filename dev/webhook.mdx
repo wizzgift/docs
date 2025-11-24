@@ -1,0 +1,152 @@
+---
+title: "Order Status Webhook (Callback)"
+description: "Here is the documentation on webhook/callback"
+sidebarTitle: "Webhook/Callback"
+---
+
+After a successful `/b2b/iframeOrder/doPayment` or `/b2b/place-order/doPayment` call and once the order is processed, WizzGift sends a **POST** request to the `callback_url` you provided.
+
+This webhook notifies you about the final order status and, when applicable, refund details and the voucher claim link.
+
+---
+
+### HTTP Method
+
+```bash
+POST {your_callback_url}
+```
+
+> `{your_callback_url}` is the URL you passed as `callback_url` in `/b2b/place-order/doPayment`.
+
+---
+
+### Request Body
+
+```json
+{
+  "checkoutId": "chk_1234567890",
+  "status": "completed",
+  "meta_data": {
+    "orderReference": "YOUR_INTERNAL_ORDER_ID",
+    "userId": "12345"
+  },
+  "link": "https://wizzgift.com/claim/abc123",
+  "refund_details": {}
+}
+```
+
+#### Fields
+
+| Field            | Type   | Required | Description                                                                                                                         |
+| :--------------- | :----- | :------- | :---------------------------------------------------------------------------------------------------------------------------------- |
+| `checkoutId`     | string | Yes      | Identifier of the checkout/order. Same value as `id` returned from `/b2b/place-order`.                                              |
+| `status`         | string | Yes      | Final status of the order. Possible values: `"completed"`, `"failed"`, `"partial"`.                                                 |
+| `meta_data`      | object | Optional | Custom data you sent in `/b2b/place-order/doPayment`. Returned exactly as provided so you can correlate with your internal systems. |
+| `link`           | string | Yes      | URL for the customer to claim/redeem the voucher.                                                                                   |
+| `refund_details` | object | Yes      | Refund information. Empty object `{}` when there is no refund. Contains refund details on failed or partially failed orders.        |
+
+---
+
+### `status` Values
+
+- `completed`\
+  The order was fully processed and delivered.
+  - `link` contains a valid claim URL.
+  - `refund_details` will be an empty object `{}` (no refund).
+- `failed`\
+  The order could not be completed.
+  - `link` may be absent or not usable.
+  - `refund_details` will describe the **full refund**.
+- `partial`\
+  Part of the order was successfully processed and part failed.
+  - `link` may give access to the successfully delivered portion.
+  - `refund_details` will describe **only the refunded amount** for failed items.
+
+---
+
+### `refund_details` Object
+
+When a refund is applied (`status = "failed"` or `status = "partial"`), `refund_details` has the following structure:
+
+```json
+{
+  "status": "completed",
+  "amount": 10,
+  "paymentMethodId": "balance"
+}
+```
+
+| Field             | Type   | Description                                                                                                           |
+| :---------------- | :----- | :-------------------------------------------------------------------------------------------------------------------- |
+| `status`          | string | Status of the refund (e.g., `"completed"`).                                                                           |
+| `amount`          | number | Refunded amount in the used payment currency (for example, in USD or the internal accounting unit).                   |
+| `paymentMethodId` | string | Indicates where the refund was issued. Typically `"balance"` meaning the amount is refunded to your WizzGift balance. |
+
+> When `status = "completed"` for the **order** and there is no refund, `refund_details` is an empty object: `{}`.
+
+---
+
+### Example Payloads
+
+#### 1. Completed Order (No Refund)
+
+```json
+{
+  "checkoutId": "chk_1234567890",
+  "status": "completed",
+  "meta_data": {
+    "orderReference": "ORDER-1001"
+  },
+  "link": "https://wizzgift.com/claim/claim-token-123",
+  "refund_details": {}
+}
+```
+
+#### 2. Failed Order (Full Refund)
+
+```json
+{
+  "checkoutId": "chk_1234567891",
+  "status": "failed",
+  "meta_data": {
+    "orderReference": "ORDER-1002"
+  },
+  "link": "",
+  "refund_details": {
+    "status": "completed",
+    "amount": 25,
+    "paymentMethodId": "balance"
+  }
+}
+```
+
+#### 3. Partial Order (Partial Refund)
+
+```json
+{
+  "checkoutId": "chk_1234567892",
+  "status": "partial",
+  "meta_data": {
+    "orderReference": "ORDER-1003"
+  },
+  "link": "https://wizzgift.com/claim/claim-token-456",
+  "refund_details": {
+    "status": "completed",
+    "amount": 10,
+    "paymentMethodId": "balance"
+  }
+}
+```
+
+---
+
+### Recommended Handling on Your Side
+
+1. **Verify **`checkoutId`\
+   Ensure the `checkoutId` matches an existing order/check-out in your system.
+2. **Use **`meta_data`**for Mapping** \
+   Use `meta_data` to map the webhook to your internal order, user, or transaction records.
+3. **Check **`status`**and ** `refund_details`
+   - If `status = "completed"` and `refund_details = {}`, mark the order as delivered and allow the customer to claim via `link`.
+   - If `status = "failed"`, mark the order as failed and update the refunded amount using `refund_details.amount`.
+   - If `status = "partial"`, mark the order as partially completed and adjust balances according to `refund_details.amount`.
