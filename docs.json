@@ -2,39 +2,38 @@
   "$schema": "https://mintlify.com/docs.json",
   "theme": "mint",
   "name": "WizzGift Docs",
-   "description": "Deliver the full WizzGift gift card, premium catalog, and top-up experience inside your website or application using our secure Integration",
+  "description": "Deliver the full WizzGift gift card, premium catalog, and top-up experience inside your website or application using our secure Integration",
   "colors": {
     "primary": "#000000",
     "light": "#FFFFFF",
     "dark": "#000000"
   },
- "favicon": "/favicon.ico",
+  "favicon": "/favicon.ico",
   "ai": {
     "enabled": true
   },
-    "logo": {
+  "logo": {
     "light": "/logo.svg",
     "dark": "/logo-dark.svg",
     "href": "https://docs.wizzgift.com"
   },
- "contextual": {
-   "options": [
-     "chatgpt",
-     "copy",
-     "view",
-     "claude",
-     "perplexity",
-     "mcp",
-     "cursor",
-     "vscode"
-   ]
- },
-    "topbarCtaButton": {
-    "text": "Get Started",
-    "url": "/introduction"
+  "contextual": {
+    "options": [
+      "chatgpt",
+      "copy",
+      "view",
+      "claude",
+      "perplexity",
+      "mcp",
+      "cursor",
+      "vscode"
+    ]
   },
-  
-    "navigation": {
+  "topbarCtaButton": {
+    "text": "Get Started",
+    "url": "/"
+  },
+  "navigation": {
     "dropdowns": [
       {
         "dropdown": "Introduction",
@@ -44,24 +43,23 @@
           {
             "group": "Getting started",
             "pages": [
-              "index",
-              "introduction"
+              "index"
             ]
           },
           {
-            "group": "Customization",
+            "group": "Iframe Integration",
             "pages": [
-              "settings",
-              "users",
-              "features"
+              "iframe/introduction",
+              "iframe/customization",
+              "iframe/integration"
             ]
           },
           {
-            "group": "Billing",
+            "group": "API Integration",
             "pages": [
-              "billing/overview",
-              "billing/payments",
-              "billing/subscriptions"
+              "api/introduction",
+              "api/product",
+              "api/order"
             ]
           }
         ]
