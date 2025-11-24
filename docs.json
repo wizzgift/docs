@@ -3,6 +3,11 @@
   "theme": "mint",
   "name": "WizzGift Docs",
   "colors": { "primary": "#4C6EF5" },
+
+  "ai": {
+    "enabled": true
+  },
+
   "navigation": {
     "pages": ["index"],
     "groups": [
