@@ -1,5 +1,241 @@
 ---
-title: 'New file'
-description: 'Description of your new file.'
+title: "Product API"
+description: "The Product API allows integrators to retrieve a full list of available products or fetch detailed information for a specific product. All endpoints require Bearer token authentication using your API Key."
+sidebarTitle: "Product"
 ---
 
+Base URL:
+
+```
+https://api2.wizzgift.com/b2b
+```
+
+---
+
+<Card title="How to Authenticate" icon="person-to-door" href="/api/authentication">
+  if you haven't checked how authentication works, please do by clicking here!
+
+  Authentication is required on every API request, so you must have proper knowledge on wizzgift API authentication
+</Card>
+
+---
+
+## **1. Get All Products**
+
+Retrieve all available products at once.
+
+### **Method:**
+
+`GET`
+
+### **Endpoint:**
+
+`/product`
+
+### **Authentication:**
+
+Required (Bearer API Key)
+
+---
+
+## **Request Example**
+
+```
+GET /b2b/product HTTP/1.1
+Host: api2.wizzgift.com
+Authorization: Bearer <YOUR_API_KEY>
+Accept: application/json
+```
+
+This endpoint does not accept any query parameters.
+
+---
+
+## **Successful Response Example**
+
+_(Truncated for documentation clarity)_
+
+```
+{
+  "success": true,
+  "data": [
+    {
+      "slug": "binance-gift-card",
+      "name": "Binance Gift Card",
+      "description": "<div class=\"product-description binance-gift-card-usdt\">...</div>",
+      "instruction": "<div class=\"binance-gift-card-redeem-instructions\">...</div>",
+      "image": "https://cdn.wizzgift.com/product/binance-gift-card.png",
+      "product_currency": "USD",
+      "cost_currency": "USD",
+      "brand_color": "#EFC94A",
+      "countries": ["GB", "IN", "DE", "..."],
+      "categories": ["payments", "crypto"],
+      "rating": 0,
+      "skus": [
+        {
+          "id": "1",
+          "min": 1,
+          "max": 500,
+          "minCost": 1.05,
+          "changeStep": 1,
+          "active": true
+        }
+      ],
+      "required_fields": [],
+      "popularity": 0
+    },
+    {
+      "slug": "paypal-gift-worldwide",
+      "name": "Paypal Gift Card",
+      "description": "Buy PayPal gift cards online...",
+      "instruction": "Note : paypal have 4-7% internal charges...",
+      "image": "https://cdn.wizzgift.com/product/paypal-gift-worldwide.png",
+      "product_currency": "USD",
+      "cost_currency": "USD",
+      "rating": 4,
+      "required_fields": [
+        {
+          "name": "paypal_email",
+          "type": "email",
+          "description": "Enter your paypal email"
+        }
+      ],
+      "skus": [
+        {
+          "id": "1",
+          "min": 5,
+          "max": 1000,
+          "minCost": 5.25,
+          "changeStep": 0.01,
+          "active": true
+        }
+      ]
+    }
+  ]
+}
+```
+
+---
+
+# **2. Get Product by Slug**
+
+Fetch a single product using its unique **slug**, which is also referred to as the **Product ID** on WizzGift.
+
+### **Method:**
+
+`GET`
+
+### **Endpoint:**
+
+`/product/:slug`
+
+### **Authentication:**
+
+Required (Bearer API Key)
+
+---
+
+## **Path Parameter**
+
+| Parameter | Type   | Required | Description                   |
+| :-------- | :----- | :------- | :---------------------------- |
+| slug      | string | Yes      | Product slug (ID) on WizzGift |
+
+---
+
+## **Request Example**
+
+```
+GET /b2b/product/binance-gift-card HTTP/1.1
+Host: api2.wizzgift.com
+Authorization: Bearer <YOUR_API_KEY>
+Accept: application/json
+```
+
+---
+
+## **Successful Response Example**
+
+```
+{
+  "success": true,
+  "data": {
+    "slug": "binance-gift-card",
+    "name": "Binance Gift Card",
+    "description": "<div class=\"product-description binance-gift-card-usdt\">...</div>",
+    "instruction": "<div class=\"binance-gift-card-redeem-instructions\">...</div>",
+    "image": "https://cdn.wizzgift.com/product/binance-gift-card.png",
+    "product_currency": "USD",
+    "cost_currency": "USD",
+    "brand_color": "#EFC94A",
+    "countries": ["GB", "IN", "DE", "..."],
+    "categories": ["payments", "crypto"],
+    "rating": 0,
+    "skus": [
+      {
+        "id": "1",
+        "min": 1,
+        "max": 500,
+        "minCost": 1.05,
+        "changeStep": 1,
+        "active": true
+      }
+    ],
+    "required_fields": [],
+    "popularity": 0
+  }
+}
+```
+
+---
+
+# **3. Product Object Structure**
+
+Each product contains the following fields:
+
+| Field            | Type     | Description                                              |
+| :--------------- | :------- | :------------------------------------------------------- |
+| slug             | string   | Unique product identifier (Product ID).                  |
+| name             | string   | Product name.                                            |
+| description      | string   | HTML description content.                                |
+| instruction      | string   | HTML redemption instructions.                            |
+| disclosure       | string   | (Optional) Additional notes or warnings.                 |
+| image            | string   | Product image URL.                                       |
+| product_currency | string   | Face-value currency.                                     |
+| cost_currency    | string   | Billing currency.                                        |
+| brand_color      | string   | Brand theme color (hex).                                 |
+| countries        | string[] | List of supported countries.                             |
+| blacklisted      | string[] | List of restricted countries.                            |
+| categories       | string[] | Category tags (e.g., “payments”, “crypto”).              |
+| rating           | number   | Average rating (0–5).                                    |
+| skus             | object[] | Pricing structure and denomination limits.               |
+| required_fields  | object[] | Extra details required during order creation.            |
+| iframe_url       | string   | Iframe URL if applicable (often empty).                  |
+| digital_content  | boolean  | Indicates whether product delivers only digital content. |
+| reviews          | object[] | User-submitted reviews, if available.                    |
+| popularity       | number   | Popularity score.                                        |
+
+---
+
+# **4. SKU Object**
+
+| Field      | Type    | Description                              |
+| :--------- | :------ | :--------------------------------------- |
+| id         | string  | SKU identifier.                          |
+| min        | number  | Minimum denomination.                    |
+| max        | number  | Maximum denomination.                    |
+| minCost    | number  | Minimum cost for the product.            |
+| changeStep | number  | Allowed increment steps (1, 0.01, etc.). |
+| active     | boolean | Indicates availability.                  |
+
+---
+
+# **5. Required Field Object**
+
+| Field       | Type   | Description                       |
+| :---------- | :----- | :-------------------------------- |
+| name        | string | Field key (e.g., `paypal_email`). |
+| type        | string | Format type (e.g., email, text).  |
+| description | string | User instruction for input.       |
+
+---

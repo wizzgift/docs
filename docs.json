@@ -58,6 +58,7 @@
             "group": "API Integration",
             "pages": [
               "api/introduction",
+              "api/authentication",
               "api/product",
               "api/order"
             ]

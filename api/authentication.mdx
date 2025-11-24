@@ -1,0 +1,53 @@
+---
+title: "API authentication"
+description: "All WizzGift API endpoints require authentication.
+Every request—GET, POST, or any other method—must include your API Key in the Authorization header using the Bearer Token format."
+sidebarTitle: "Authentication"
+---
+
+## **Authentication Method**
+
+WizzGift uses a simple token-based authentication system.\
+You must pass your API Key as a **Bearer token** in the `Authorization` header.
+
+### **Header Format**
+
+```bash
+Authorization: Bearer <YOUR_API_KEY>
+```
+
+This header is mandatory for **all** API calls.
+
+---
+
+## **Where to Find Your API Key**
+
+You can obtain your API Key from your WizzGift dashboard:
+
+```
+Profile → Developer
+```
+
+Copy the API Key shown in this section and store it securely.
+
+---
+
+## **Example Request**
+
+```bash
+GET /b2b/product HTTP/1.1
+Host: api2.wizzgift.com
+Authorization: Bearer <YOUR_API_KEY>
+Accept: application/json
+```
+
+---
+
+## **Security Instructions**
+
+- Keep your API Key **strictly confidential**.
+- Do **not** expose it in frontend applications or public repositories.
+- Use environment variables or secure vaults for storage.
+- All requests will fail if the `Authorization` header is missing or incorrect.
+
+---
