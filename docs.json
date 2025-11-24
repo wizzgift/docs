@@ -34,6 +34,10 @@
     "url": "/"
   },
   "navigation": {
+     "groups": [{
+    "group": "API Reference",
+    "openapi": "openapi.json"
+  }],
     "dropdowns": [
       {
         "dropdown": "Documentation V1.0",

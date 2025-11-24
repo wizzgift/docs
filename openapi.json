@@ -1,0 +1,443 @@
+openapi: 3.0.3
+info:
+  title: WizzGift B2B API
+  version: 1.0.0
+  description: |
+    WizzGift B2B API for fetching available products and their details.
+
+    Authentication:
+    - All endpoints require a Bearer token in the `Authorization` header:
+      `Authorization: Bearer YOUR_API_KEY_HERE`
+
+servers:
+  - url: https://api2.wizzgift.com
+    description: Production server
+
+security:
+  - bearerAuth: []
+
+tags:
+  - name: Products
+    description: Operations related to WizzGift products
+
+paths:
+  /b2b/products:
+    get:
+      tags:
+        - Products
+      summary: List available products
+      description: |
+        Returns the list of all available WizzGift products.
+
+        Requires a valid API key via Bearer token in the `Authorization` header.
+      operationId: listProducts
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: List of products
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProductsListResponse'
+              examples:
+                successExample:
+                  summary: Successful products listing
+                  value:
+                    success: true
+                    data:
+                      - slug: paypal-gift-worldwide
+                        name: Paypal Gift Card
+                        description: >-
+                          Buy PayPal gift cards online to send instant digital funds for
+                          shopping, payments, and more. Perfect for easy, secure gifting
+                          and global use with a PayPal account.
+                        instruction: >-
+                          Note : paypal have 4-7% internal charges depending on your country
+                          account, usually funds should be available instantly but sometimes
+                          it might take upto 24 hours or you need to claim it from paypal or email.
+                        disclosure: >-
+                          Note : paypal have 4-7% internal charges depending on your
+                          country account
+                        image: https://cdn.wizzgift.com/product/paypal-gift-worldwide.png
+                        product_currency: USD
+                        cost_currency: USD
+                        brand_color: '#ffffff'
+                        countries:
+                          - US
+                          - GB
+                          - ..
+                        blacklisted: []
+                        categories:
+                          - payments
+                        rating: 4
+                        skus:
+                          - id: "1"
+                            min: 5
+                            max: 1000
+                            minCost: 5.25
+                            changeStep: 0.01
+                            active: true
+                        required_fields:
+                          - name: paypal_email
+                            type: email
+                            description: Enter your paypal email
+                        iframe_url: ""
+                        digital_content: false
+                        reviews:
+                          - name: Barnaclezs
+                            rating: 5
+                            review: All good, received instantly
+                          - name: Hippopotamusrd
+                            rating: 5
+                            review: Good
+                          - name: Lungfishhp
+                            rating: 2
+                            review: >-
+                              I gave an email that is not associated with the account. Is it
+                              possible to fix this? My PayPal account email is
+                              tanihovantan@gmail.com
+                        popularity: 0
+                      - slug: apple-gift-card-usa
+                        name: Apple Gift Card USD
+                        description: |
+                          <p>Apple Gift card is for all things Apple—products, accessories, apps,
+                          games, music, movies, TV shows, iCloud+, and more.</p>
+                        instruction: "<p>You can redeem the Apple gift card in two ways:</p>..."
+                        image: https://cdn.wizzgift.com/product/apple-gift-card-usa.png
+                        product_currency: USD
+                        cost_currency: USD
+                        brand_color: '#f3f3f6'
+                        countries:
+                          - US
+                        blacklisted: []
+                        categories:
+                          - games
+                          - entertainment
+                        rating: 0
+                        skus:
+                          - id: "1"
+                            min: 350
+                            max: 350
+                            minCost: 349.125
+                            changeStep: 1
+                            active: true
+                        required_fields: []
+                        iframe_url: ""
+                        digital_content: true
+                        popularity: 0
+        '401':
+          description: Missing or invalid authorization header
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              example:
+                error: Missing Authorization header
+
+  /b2b/products/{slug}:
+    get:
+      tags:
+        - Products
+      summary: Get product details by slug
+      description: |
+        Returns detailed information for a single product identified by its slug.
+
+        Requires a valid API key via Bearer token in the `Authorization` header.
+      operationId: getProductBySlug
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: slug
+          in: path
+          required: true
+          description: Unique product identifier (slug)
+          schema:
+            type: string
+            example: amazon-australia-egift-voucher
+      responses:
+        '200':
+          description: Product details
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProductResponse'
+              examples:
+                successExample:
+                  summary: Successful product lookup
+                  value:
+                    success: true
+                    data:
+                      slug: amazon-australia-egift-voucher
+                      name: Amazon Australia eGift Voucher
+                      description: |
+                        <p>Amazon.com.au Gift Cards can be used to purchase millions of
+                        items sold on Amazon.com.au today – from electronics to fashion to
+                        appliances and household items. Amazon.com.au Gift Cards can be
+                        added to your balance and used as per your convenience.</p>
+                      instruction: |
+                        <p>How to Redeem:</p><ul><li>In your Amazon account, Simply enter
+                        your Digital gift card code within the Gift Card Section.</li>...</ul>
+                      image: https://cdn.wizzgift.com/product/amazon-australia-egift-voucher.png
+                      product_currency: AUD
+                      cost_currency: AUD
+                      brand_color: '#282e33'
+                      countries:
+                        - AU
+                      blacklisted: []
+                      categories:
+                        - ecommerce
+                      rating: 0
+                      skus:
+                        - id: "2"
+                          min: 1
+                          max: 5000
+                          minCost: 1.02627
+                          changeStep: 1
+                          active: true
+                      required_fields: []
+                      iframe_url: ""
+                      digital_content: false
+                      popularity: 0
+        '401':
+          description: Missing or invalid authorization header
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              example:
+                error: Missing Authorization header
+        '404':
+          description: Product not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              example:
+                error: Product not found
+
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+
+  schemas:
+    ProductsListResponse:
+      type: object
+      properties:
+        success:
+          type: boolean
+          description: Indicates whether the request was successful.
+        data:
+          type: array
+          description: List of products.
+          items:
+            $ref: '#/components/schemas/Product'
+      required:
+        - success
+        - data
+
+    ProductResponse:
+      type: object
+      properties:
+        success:
+          type: boolean
+          description: Indicates whether the request was successful.
+        data:
+          $ref: '#/components/schemas/Product'
+      required:
+        - success
+        - data
+
+    Product:
+      type: object
+      properties:
+        slug:
+          type: string
+          description: Unique product identifier.
+          example: paypal-gift-worldwide
+        name:
+          type: string
+          description: Product display name.
+          example: Paypal Gift Card
+        description:
+          type: string
+          description: Long description of the product. May contain HTML.
+        instruction:
+          type: string
+          description: Redemption or usage instructions. May contain HTML.
+        disclosure:
+          type: string
+          nullable: true
+          description: Additional disclosure text, if any.
+        image:
+          type: string
+          format: uri
+          description: URL to the product image.
+        product_currency:
+          type: string
+          description: Currency in which the product is denominated (end-user value).
+          example: USD
+        cost_currency:
+          type: string
+          description: Currency used for billing the partner.
+          example: USD
+        brand_color:
+          type: string
+          description: Brand color in hex format.
+          example: '#ffffff'
+        countries:
+          type: array
+          description: ISO 3166-1 alpha-2 country codes where the product is valid.
+          items:
+            type: string
+            example: US
+        blacklisted:
+          type: array
+          description: ISO country codes where the product is not allowed.
+          items:
+            type: string
+        categories:
+          type: array
+          description: Categories for the product.
+          items:
+            type: string
+            example: payments
+        rating:
+          type: number
+          format: float
+          description: Average rating for the product.
+          example: 4
+        skus:
+          type: array
+          description: Available SKUs / denominations.
+          items:
+            $ref: '#/components/schemas/Sku'
+        required_fields:
+          type: array
+          description: Extra fields required from the customer for fulfillment.
+          items:
+            $ref: '#/components/schemas/RequiredField'
+        iframe_url:
+          type: string
+          description: URL for iframe-based flow if supported, empty string otherwise.
+        digital_content:
+          type: boolean
+          description: |
+            Indicates if the product is direct digital content (e.g., code delivered),
+            as opposed to other fulfillment methods.
+        reviews:
+          type: array
+          description: Optional public reviews for the product.
+          items:
+            $ref: '#/components/schemas/Review'
+        popularity:
+          type: number
+          format: float
+          description: Popularity score for internal ranking.
+      required:
+        - slug
+        - name
+        - description
+        - image
+        - product_currency
+        - cost_currency
+        - countries
+        - blacklisted
+        - categories
+        - skus
+        - required_fields
+        - iframe_url
+        - digital_content
+        - popularity
+
+    Sku:
+      type: object
+      properties:
+        id:
+          type: string
+          description: SKU identifier.
+          example: "1"
+        min:
+          type: number
+          format: float
+          description: Minimum value for this SKU (face value).
+          example: 5
+        max:
+          type: number
+          format: float
+          description: Maximum value for this SKU (face value).
+          example: 1000
+        minCost:
+          type: number
+          format: float
+          description: Minimum cost to the partner for this SKU.
+          example: 5.25
+        changeStep:
+          type: number
+          format: float
+          description: Step increment allowed when specifying amount.
+          example: 0.01
+        active:
+          type: boolean
+          description: Indicates whether this SKU is active.
+      required:
+        - id
+        - min
+        - max
+        - minCost
+        - changeStep
+        - active
+
+    RequiredField:
+      type: object
+      properties:
+        name:
+          type: string
+          description: Field name/key.
+          example: paypal_email
+        type:
+          type: string
+          description: Field type (e.g., text, email, number).
+          example: email
+        description:
+          type: string
+          description: User-facing description / label for the field.
+          example: Enter your paypal email
+      required:
+        - name
+        - type
+        - description
+
+    Review:
+      type: object
+      properties:
+        name:
+          type: string
+          description: Reviewer display name.
+          example: Barnaclezs
+        rating:
+          type: number
+          format: float
+          description: Rating value (e.g., 1–5).
+          example: 5
+        review:
+          type: string
+          description: Review text.
+          example: All good, received instantly
+      required:
+        - name
+        - rating
+        - review
+
+    ErrorResponse:
+      type: object
+      properties:
+        error:
+          type: string
+          description: Error message.
+          example: Missing Authorization header
+      required:
+        - error
