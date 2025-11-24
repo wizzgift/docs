@@ -7,7 +7,18 @@
   "ai": {
     "enabled": true
   },
-
+ "contextual": {
+   "options": [
+     "copy",
+     "view",
+     "chatgpt",
+     "claude",
+     "perplexity",
+     "mcp",
+     "cursor",
+     "vscode"
+   ]
+ },
   "navigation": {
     "pages": ["index"],
     "groups": [
