@@ -24,28 +24,16 @@ https://api2.wizzgift.com/b2b
 
 Retrieve all available products at once.
 
-### **Method:**
+<RequestExample>
 
-`GET`
-
-### **Endpoint:**
-
-`/product`
-
-### **Authentication:**
-
-Required (Bearer API Key)
-
----
-
-## **Request Example**
-
-```
-GET /b2b/product HTTP/1.1
+```bash request
+GET /b2b/products HTTP/1.1
 Host: api2.wizzgift.com
 Authorization: Bearer <YOUR_API_KEY>
 Accept: application/json
 ```
+
+</RequestExample>
 
 This endpoint does not accept any query parameters.
 
@@ -146,7 +134,7 @@ Required (Bearer API Key)
 ## **Request Example**
 
 ```
-GET /b2b/product/binance-gift-card HTTP/1.1
+GET /b2b/products/binance-gift-card HTTP/1.1
 Host: api2.wizzgift.com
 Authorization: Bearer <YOUR_API_KEY>
 Accept: application/json
