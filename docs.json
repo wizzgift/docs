@@ -55,7 +55,7 @@
   "navigation": {
     "groups": [{
     "group": "API Reference",
-    "openapi": "openapi.json"
+    "openapi": "openapi.yaml"
   }],
     "dropdowns": [
       {
