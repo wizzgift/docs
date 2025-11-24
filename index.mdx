@@ -1,0 +1,75 @@
+---
+title: "Developer Documentation"
+description: "Description of your new file."
+---
+
+> **Integration Options:**
+>
+> - **Iframe Integration (Recommended)** – fastest to launch, ships the full WizzGift catalog out‑of‑the‑box; some cards and top‑ups are **exclusive to Iframe**. Minimal engineering effort, themeable (light/dark), automatic updates.
+> - **API Integration** – full server‑to‑server control over catalog, pricing, ordering, and fulfillment. Requires you to build UI, handle state, and protect keys.
+
+---
+
+## 1) Getting Started
+
+### 1.1 Create an Account
+
+- Sign up on **WizzGift**.
+- **No KYC is required** to create and access developer tools for testing.
+
+### 1.2 Verify Your Email (Recommended)
+
+- For account security and to reduce support friction, **verify your email** from the verification link sent to you.
+
+### 1.3 Locate Your Developer Keys
+
+- In your dashboard, go to **Profile → Developer**.
+- You will find:
+  - **Iframe Integration ID** (also represents your user ID)
+  - **API Key** (server‑side secret). **Do not share publicly.**
+- Both values are visible on the **Developer** page. Use the copy buttons to avoid transcription errors.
+
+> You will need **both** values regardless of the integration path you choose.
+
+---
+
+## 2) Iframe Integration (Recommended)
+
+**Why choose Iframe?**
+
+- Instant access to the **entire WizzGift catalog** with built‑in search, categories, and regional availability.
+- **Exclusive items** (certain gift cards and phone top‑ups) are only offered through iframe.
+- **Less maintenance:** WizzGift keeps catalog, pricing, and UX updated.
+- **Themeable:** Choose **light** or **dark** to match your brand.
+
+---
+
+## 3) API Integration
+
+Use the server‑to‑server API if you need full control over UX and flows. **Never expose your API Key in client‑side code.**
+
+### 
+
+---
+
+## 4) FAQ
+
+**Do I need KYC to start?** No; creating an account and accessing developer tools does not require KYC.
+
+**Where do I find my keys?** Profile → Developer → _Iframe Integration ID_ and _API Key_.
+
+**Which integration should I use?** Prefer **Iframe** for speed, coverage, and exclusive items. Use **API** for advanced customization.
+
+**Can I theme the UI?** Yes. Use `theme=light|dark` on the iframe.
+
+**How do I test webhooks locally?** Use a tunneling tool (e.g., `cloudflared`, `ngrok`) to expose your local endpoint.
+
+---
+
+## 5) Next Steps
+
+1. Create account and verify email.
+2. Copy **Iframe Integration ID** and **API Key** from **Profile → Developer**.
+3. Start with **Iframe** (embed snippet) and set `success_url`/`cancel_url`.
+4. Implement **Webhooks** for order events.
+5. (Optional) Build **API** flows where you need custom UX.
