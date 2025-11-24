@@ -33,30 +33,13 @@
     "text": "Get Started",
     "url": "/"
   },
-    "navbar": {
-    "links": [
-      {
-        "label": "Documentation",
-        "href": "https://docs.wizzgift.com",
-        "icon": "book"
-      },
-      {
-        "label": "API Reference",
-        "href": "https://docs.wizzgift.com",
-        "icon": "square-terminal"
-      }
-    ],
-    "primary": {
-      "type": "button",
-      "label": "Get Started",
-      "href": "https://www.wizzgift.com"
-    }
-  },
   "navigation": {
-    "groups": [{
-    "group": "API Reference",
-    "openapi": "openapi.yaml"
-  }],
+     "tabs": [
+    {
+      "tab": "API Reference",
+      "openapi": "openapi.yaml"
+    }
+  ],
     "dropdowns": [
       {
         "dropdown": "Documentation V1.0",
