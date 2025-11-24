@@ -1,9 +1,11 @@
 openapi: 3.0.3
 info:
   title: WizzGift B2B API
-  version: 1.0.0
+  version: 1.1.0
   description: |
-    WizzGift B2B API for fetching available products and their details.
+    WizzGift B2B API for:
+    - Iframe Integration
+    - Direct API Integration
 
     Authentication:
     - All endpoints require a Bearer token in the `Authorization` header:
@@ -17,14 +19,178 @@ security:
   - bearerAuth: []
 
 tags:
-  - name: Products
-    description: Operations related to WizzGift products
+  - name: Iframe Integration
+    description: Endpoints for iframe-based payment flows.
+  - name: API Integration
+    description: Endpoints for direct API / server-to-server integrations.
 
 paths:
+  ########################################
+  # IFRAME INTEGRATION
+  ########################################
+
+  /iframeOrder/getDetails:
+    post:
+      tags:
+        - Iframe Integration
+      summary: Get iframe order details
+      description: |
+        Returns order details for iframe-based integration.
+
+        The request body must contain a signed JWT issued by WizzGift.
+      operationId: iframeGetDetails
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/IframeGetDetailsRequest'
+            example:
+              jwt: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..."
+      responses:
+        '200':
+          description: Iframe order details returned successfully.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/IframeOrderDetailsResponse'
+              example:
+                success: true
+                data:
+                  order_id: "IFR-123456"
+                  product_slug: "paypal-gift-worldwide"
+                  amount: 50
+                  currency: "USD"
+                  expires_at: "2025-01-01T12:00:00Z"
+        '400':
+          description: Invalid JWT or malformed request.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              example:
+                error: "Invalid JWT"
+        '401':
+          description: Missing or invalid authorization header.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              example:
+                error: "Missing Authorization header"
+
+  /iframeOrder/doPayment:
+    post:
+      tags:
+        - Iframe Integration
+      summary: Initiate iframe payment
+      description: |
+        Initiates the payment flow for iframe integration.
+
+        The request body must include:
+        - `jwt`: Signed JWT token from WizzGift.
+        - `callback_url`: Public URL where WizzGift will send a POST request with the payment result.
+        - `meta_data`: Arbitrary JSON object. WizzGift will return this unchanged in the callback
+          payload for your reference.
+
+        WizzGift will later POST the payment result to `callback_url`.
+      operationId: iframeDoPayment
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/IframeDoPaymentRequest'
+            example:
+              jwt: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..."
+              callback_url: "https://merchant.example.com/wizzgift/callback"
+              meta_data:
+                user_id: "12345"
+                internal_order_id: "ORD-98765"
+                source: "wizzgift_iframe"
+      responses:
+        '200':
+          description: Payment successfully initiated.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/IframeDoPaymentResponse'
+              example:
+                success: true
+                data:
+                  status: "pending"
+                  iframe_session_id: "IFR-SESSION-123456"
+                  message: "Payment session created."
+        '400':
+          description: Invalid request (missing fields, invalid JWT, invalid callback URL, etc.).
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              example:
+                error: "callback_url must be a valid HTTPS URL"
+        '401':
+          description: Missing or invalid authorization header.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              example:
+                error: "Missing Authorization header"
+
+      # Documenting the callback that WizzGift will send to callback_url
+      callbacks:
+        paymentResult:
+          '{$request.body#/callback_url}':
+            post:
+              summary: Payment result callback from WizzGift
+              description: |
+                WizzGift will POST the payment result to the `callback_url` you provided
+                in `/iframeOrder/doPayment`.
+
+                The payload includes `meta_data` exactly as you sent it, plus payment status
+                and any additional fields defined by WizzGift.
+              requestBody:
+                required: true
+                content:
+                  application/json:
+                    schema:
+                      $ref: '#/components/schemas/IframeCallbackPayload'
+                    example:
+                      success: true
+                      status: "completed"
+                      transaction_id: "TRX-123456"
+                      product_slug: "paypal-gift-worldwide"
+                      amount: 50
+                      currency: "USD"
+                      meta_data:
+                        user_id: "12345"
+                        internal_order_id: "ORD-98765"
+                        source: "wizzgift_iframe"
+              responses:
+                '200':
+                  description: Your server acknowledged receipt of the callback.
+                  content:
+                    application/json:
+                      schema:
+                        type: object
+                        properties:
+                          received:
+                            type: boolean
+                            example: true
+
+  ########################################
+  # API INTEGRATION (PRODUCTS, ETC.)
+  ########################################
+
   /b2b/products:
     get:
       tags:
-        - Products
+        - API Integration
       summary: List available products
       description: |
         Returns the list of all available WizzGift products.
@@ -35,7 +201,7 @@ paths:
         - bearerAuth: []
       responses:
         '200':
-          description: List of products
+          description: List of products.
           content:
             application/json:
               schema:
@@ -100,9 +266,7 @@ paths:
                         popularity: 0
                       - slug: apple-gift-card-usa
                         name: Apple Gift Card USD
-                        description: |
-                          <p>Apple Gift card is for all things Apple—products, accessories, apps,
-                          games, music, movies, TV shows, iCloud+, and more.</p>
+                        description: "<p>Apple Gift card is for all things Apple...</p>"
                         instruction: "<p>You can redeem the Apple gift card in two ways:</p>..."
                         image: https://cdn.wizzgift.com/product/apple-gift-card-usa.png
                         product_currency: USD
@@ -127,18 +291,18 @@ paths:
                         digital_content: true
                         popularity: 0
         '401':
-          description: Missing or invalid authorization header
+          description: Missing or invalid authorization header.
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
               example:
-                error: Missing Authorization header
+                error: "Missing Authorization header"
 
   /b2b/products/{slug}:
     get:
       tags:
-        - Products
+        - API Integration
       summary: Get product details by slug
       description: |
         Returns detailed information for a single product identified by its slug.
@@ -151,13 +315,13 @@ paths:
         - name: slug
           in: path
           required: true
-          description: Unique product identifier (slug)
+          description: Unique product identifier (slug).
           schema:
             type: string
             example: amazon-australia-egift-voucher
       responses:
         '200':
-          description: Product details
+          description: Product details.
           content:
             application/json:
               schema:
@@ -172,12 +336,8 @@ paths:
                       name: Amazon Australia eGift Voucher
                       description: |
                         <p>Amazon.com.au Gift Cards can be used to purchase millions of
-                        items sold on Amazon.com.au today – from electronics to fashion to
-                        appliances and household items. Amazon.com.au Gift Cards can be
-                        added to your balance and used as per your convenience.</p>
-                      instruction: |
-                        <p>How to Redeem:</p><ul><li>In your Amazon account, Simply enter
-                        your Digital gift card code within the Gift Card Section.</li>...</ul>
+                        items sold on Amazon.com.au today...</p>
+                      instruction: "<p>How to Redeem:</p><ul><li>In your Amazon account...</li></ul>"
                       image: https://cdn.wizzgift.com/product/amazon-australia-egift-voucher.png
                       product_currency: AUD
                       cost_currency: AUD
@@ -200,21 +360,21 @@ paths:
                       digital_content: false
                       popularity: 0
         '401':
-          description: Missing or invalid authorization header
+          description: Missing or invalid authorization header.
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
               example:
-                error: Missing Authorization header
+                error: "Missing Authorization header"
         '404':
-          description: Product not found
+          description: Product not found.
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
               example:
-                error: Product not found
+                error: "Product not found"
 
 components:
   securitySchemes:
@@ -224,15 +384,125 @@ components:
       bearerFormat: JWT
 
   schemas:
+    ########################################
+    # IFRAME INTEGRATION SCHEMAS
+    ########################################
+    IframeGetDetailsRequest:
+      type: object
+      properties:
+        jwt:
+          type: string
+          description: Signed JWT token issued by WizzGift.
+      required:
+        - jwt
+
+    IframeOrderDetailsResponse:
+      type: object
+      description: Generic container for iframe order details.
+      properties:
+        success:
+          type: boolean
+        data:
+          type: object
+          description: Order details required for iframe flow.
+          additionalProperties: true
+      required:
+        - success
+        - data
+
+    IframeDoPaymentRequest:
+      type: object
+      properties:
+        jwt:
+          type: string
+          description: Signed JWT token issued by WizzGift.
+        callback_url:
+          type: string
+          format: uri
+          description: |
+            Public HTTPS URL where WizzGift will send a POST callback with payment result.
+        meta_data:
+          type: object
+          description: |
+            Arbitrary JSON object for merchant’s internal reference.
+
+            This will be returned unchanged in the callback payload.
+          additionalProperties: true
+      required:
+        - jwt
+        - callback_url
+        - meta_data
+
+    IframeDoPaymentResponse:
+      type: object
+      properties:
+        success:
+          type: boolean
+        data:
+          type: object
+          description: Information about the created payment session.
+          properties:
+            status:
+              type: string
+              description: Current status of the payment session.
+              example: pending
+            iframe_session_id:
+              type: string
+              description: Identifier for this iframe payment session.
+            message:
+              type: string
+              description: Optional human-readable message.
+          additionalProperties: true
+      required:
+        - success
+        - data
+
+    IframeCallbackPayload:
+      type: object
+      description: Payload sent by WizzGift to the merchant's callback_url.
+      properties:
+        success:
+          type: boolean
+          description: Indicates whether the payment was successful end-to-end.
+        status:
+          type: string
+          description: |
+            Payment status (e.g., `pending`, `completed`, `failed`, `cancelled`).
+        transaction_id:
+          type: string
+          description: Unique transaction identifier from WizzGift.
+        product_slug:
+          type: string
+          description: Slug of the purchased product.
+        amount:
+          type: number
+          format: float
+          description: Paid amount (face value).
+        currency:
+          type: string
+          description: Currency code (ISO 4217).
+          example: USD
+        meta_data:
+          type: object
+          description: |
+            The same meta_data object you submitted in /iframeOrder/doPayment.
+          additionalProperties: true
+      additionalProperties: true
+      required:
+        - success
+        - status
+        - meta_data
+
+    ########################################
+    # API INTEGRATION SCHEMAS (PRODUCTS)
+    ########################################
     ProductsListResponse:
       type: object
       properties:
         success:
           type: boolean
-          description: Indicates whether the request was successful.
         data:
           type: array
-          description: List of products.
           items:
             $ref: '#/components/schemas/Product'
       required:
@@ -244,7 +514,6 @@ components:
       properties:
         success:
           type: boolean
-          description: Indicates whether the request was successful.
         data:
           $ref: '#/components/schemas/Product'
       required:
@@ -256,11 +525,9 @@ components:
       properties:
         slug:
           type: string
-          description: Unique product identifier.
           example: paypal-gift-worldwide
         name:
           type: string
-          description: Product display name.
           example: Paypal Gift Card
         description:
           type: string
@@ -271,72 +538,54 @@ components:
         disclosure:
           type: string
           nullable: true
-          description: Additional disclosure text, if any.
         image:
           type: string
           format: uri
-          description: URL to the product image.
         product_currency:
           type: string
-          description: Currency in which the product is denominated (end-user value).
           example: USD
         cost_currency:
           type: string
-          description: Currency used for billing the partner.
           example: USD
         brand_color:
           type: string
-          description: Brand color in hex format.
           example: '#ffffff'
         countries:
           type: array
-          description: ISO 3166-1 alpha-2 country codes where the product is valid.
           items:
             type: string
             example: US
         blacklisted:
           type: array
-          description: ISO country codes where the product is not allowed.
           items:
             type: string
         categories:
           type: array
-          description: Categories for the product.
           items:
             type: string
             example: payments
         rating:
           type: number
           format: float
-          description: Average rating for the product.
-          example: 4
         skus:
           type: array
-          description: Available SKUs / denominations.
           items:
             $ref: '#/components/schemas/Sku'
         required_fields:
           type: array
-          description: Extra fields required from the customer for fulfillment.
           items:
             $ref: '#/components/schemas/RequiredField'
         iframe_url:
           type: string
-          description: URL for iframe-based flow if supported, empty string otherwise.
         digital_content:
           type: boolean
-          description: |
-            Indicates if the product is direct digital content (e.g., code delivered),
-            as opposed to other fulfillment methods.
         reviews:
           type: array
-          description: Optional public reviews for the product.
           items:
             $ref: '#/components/schemas/Review'
         popularity:
           type: number
           format: float
-          description: Popularity score for internal ranking.
       required:
         - slug
         - name
@@ -358,31 +607,21 @@ components:
       properties:
         id:
           type: string
-          description: SKU identifier.
           example: "1"
         min:
           type: number
           format: float
-          description: Minimum value for this SKU (face value).
-          example: 5
         max:
           type: number
           format: float
-          description: Maximum value for this SKU (face value).
-          example: 1000
         minCost:
           type: number
           format: float
-          description: Minimum cost to the partner for this SKU.
-          example: 5.25
         changeStep:
           type: number
           format: float
-          description: Step increment allowed when specifying amount.
-          example: 0.01
         active:
           type: boolean
-          description: Indicates whether this SKU is active.
       required:
         - id
         - min
@@ -396,15 +635,12 @@ components:
       properties:
         name:
           type: string
-          description: Field name/key.
           example: paypal_email
         type:
           type: string
-          description: Field type (e.g., text, email, number).
           example: email
         description:
           type: string
-          description: User-facing description / label for the field.
           example: Enter your paypal email
       required:
         - name
@@ -416,17 +652,11 @@ components:
       properties:
         name:
           type: string
-          description: Reviewer display name.
-          example: Barnaclezs
         rating:
           type: number
           format: float
-          description: Rating value (e.g., 1–5).
-          example: 5
         review:
           type: string
-          description: Review text.
-          example: All good, received instantly
       required:
         - name
         - rating
@@ -437,7 +667,6 @@ components:
       properties:
         error:
           type: string
-          description: Error message.
           example: Missing Authorization header
       required:
         - error
