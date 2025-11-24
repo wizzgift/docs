@@ -9,9 +9,9 @@
   },
  "contextual": {
    "options": [
+     "chatgpt",
      "copy",
      "view",
-     "chatgpt",
      "claude",
      "perplexity",
      "mcp",
