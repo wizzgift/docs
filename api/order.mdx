@@ -1,5 +1,222 @@
 ---
-title: "New file"
-description: "Description of your new file."
+title: "Order API"
+description: "Here we explain order api in detail"
 sidebarTitle: "Order"
+---
+
+<Info>
+  You can directly test the API from API reference tab above, you recommend checking that as it includes API calls in detail and you can also do live testing there.
+</Info>
+
+<Card title="Click Me" icon="sparkles" href="/api-reference/api-integration/place-one-or-more-product-orders">
+  Click me if you want to directly check API reference for Placing Orders
+</Card>
+
+## Create Checkout / Place Order
+
+**Endpoint**
+
+```
+POST /b2b/place-order
+```
+
+Creates a checkout for one or more products. The response returns a `checkoutId` that must be used in `/b2b/place-order/doPayment` to complete the order.
+
+---
+
+### Request Body
+
+```json
+{
+  "data": [
+    {
+      "slug": "t-mobile-united-states",
+      "skuItemId": "US_TM_10_100",
+      "quantity": 1,
+      "amount": 10,
+      "requiredFields": [
+        {
+          "name": "mobile",
+          "value": "1203256458"
+        }
+      ]
+    }
+  ]
+}
+```
+
+#### Top-level fields
+
+| Field  | Type             | Required | Description                                                               |
+| :----- | :--------------- | :------- | :------------------------------------------------------------------------ |
+| `data` | array of objects | Yes      | List of items to include in this order. Maximum **10** items per request. |
+
+#### `data[]` item fields
+
+Each object inside `data` represents one product (SKU) in the order.
+
+| Field            | Type             | Required      | Description                                                                                                                                                                  |
+| :--------------- | :--------------- | :------------ | :--------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `slug`           | string           | Yes           | Product identifier (also known as **product id**). You can obtain this from the Products API.                                                                                |
+| `skuItemId`      | string           | Yes           | Unique identifier of the SKU item.                                                                                                                                           |
+| `quantity`       | integer          | Yes           | Number of units of this SKU to purchase. Maximum **25** per item.                                                                                                            |
+| `amount`         | number           | Yes           | Order amount per unit in **USD** for this SKU, or total amount for this line item (as defined by your pricing logic).                                                        |
+| `requiredFields` | array of objects | Conditionally | Additional required input for this product (e.g., mobile number). Required **only** if the product defines required fields. Omit this if the product has no required fields. |
+
+#### `requiredFields[]` object
+
+| Field   | Type   | Required | Description                                                        |
+| :------ | :----- | :------- | :----------------------------------------------------------------- |
+| `name`  | string | Yes      | Name/key of the required field (e.g., `"mobile"`).                 |
+| `value` | string | Yes      | Value for the required field (e.g., the customer’s mobile number). |
+
+**Constraints**
+
+- Maximum **10 items** in `data` per request.
+- Maximum **25 quantity** per item.
+- `requiredFields` is **optional**, but when a product defines required fields, they must be provided here.
+
+---
+
+### Success Response
+
+```json
+{
+  "id": "chk_1234567890",
+  "status": "pending",
+  "data": [
+    {
+      "slug": "t-mobile-united-states",
+      "skuItemId": "US_TM_10_100",
+      "quantity": 1,
+      "amount": 10,
+      "requiredFields": [
+        {
+          "name": "mobile",
+          "value": "1203256458"
+        }
+      ]
+    }
+  ],
+  "totalPrice": {
+    "USD": 10.199918400652795,
+    "EUR": 8.853611949827732,
+    "GBP": 7.7947545845553785,
+    "AUD": 15.810804806874797,
+    "CAD": 14.394141552871512,
+    "INR": 909.0295185196178,
+    "LTC": 0.12227918720437372,
+    "BTC": 0.00011855065091697267,
+    "USDC": 10.199918400652795,
+    "USDT": 10.205276170642382,
+    "XRP": 4.918112008800981,
+    "XLM": 41.81896915684
+  },
+  "totalAmount": 10
+}
+```
+
+#### Response fields
+
+| Field         | Type           | Description                                                                                                                                               |
+| :------------ | :------------- | :-------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `id`          | string         | The **checkoutId** that uniquely identifies this checkout. Use this value in `/b2b/place-order/doPayment`.                                                |
+| `status`      | string         | Current status of the checkout (e.g., `"pending"`).                                                                                                       |
+| `data`        | array          | Echo of the items you submitted in the request, with their details.                                                                                       |
+| `totalPrice`  | object         | Object containing the total price converted into multiple currencies and crypto assets (keys like `USD`, `EUR`, `BTC`, `USDT`, etc.). Values are numbers. |
+| `totalAmount` | integer/number | Total order amount in **USD**.                                                                                                                            |
+
+> Note: `id` in this response **is the same as** `checkoutId` used in the payment endpoint.
+
+---
+
+## Complete Payment
+
+**Endpoint**
+
+```bash
+POST /b2b/place-order/doPayment
+```
+
+Confirms and processes payment for an existing checkout created via `/b2b/place-order`. On success, the order will proceed to delivery. A callback will be sent to your `callback_url` once the order is completed.
+
+---
+
+### Request Body
+
+```json
+{
+  "checkoutId": "chk_1234567890",
+  "callback_url": "https://your-domain.com/webhooks/wizzgift",
+  "meta_data": {
+    "orderReference": "YOUR_INTERNAL_ORDER_ID",
+    "userId": "12345"
+  }
+}
+```
+
+#### Fields
+
+| Field          | Type   | Required | Description                                                                                                                                                          |
+| :------------- | :----- | :------- | :------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `checkoutId`   | string | Yes      | The checkout id returned as `id` from `/b2b/place-order`.                                                                                                            |
+| `callback_url` | string | Yes      | HTTPS URL where WizzGift will send a POST callback when the order is completed.                                                                                      |
+| `meta_data`    | object | Optional | Arbitrary JSON object you can use to attach your own data (e.g., user ID, internal order reference). This object will be returned unchanged in the callback request. |
+
+---
+
+### Success Response
+
+```json
+{
+  "success": true
+}
+```
+
+| Field     | Type    | Description                           |
+| :-------- | :------ | :------------------------------------ |
+| `success` | boolean | `true` if the payment was successful. |
+
+---
+
+### Error Responses
+
+Examples of possible error responses:
+
+```json
+{
+  "error": "Insufficient balance"
+}
+```
+
+```json
+{
+  "error": "Checkout not found"
+}
+```
+
+```json
+{
+  "error": "Checkout/Order not found, make sure valid checkout/order id is provided"
+}
+```
+
+#### Error field
+
+| Field   | Type   | Description                             |
+| :------ | :----- | :-------------------------------------- |
+| `error` | string | Description of the error that occurred. |
+
+---
+
+### Callback Behaviour
+
+Once `/b2b/place-order/doPayment` succeeds and the order is processed:
+
+- WizzGift will send a **POST** request to your `callback_url`.
+- The callback will include:
+  - Final order status.
+  - Order details.
+  - The same `meta_data` object you passed in the `/doPayment` request, allowing you to correlate the order with your internal systems.
+
 ---
