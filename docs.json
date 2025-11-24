@@ -2,10 +2,20 @@
   "$schema": "https://mintlify.com/docs.json",
   "theme": "mint",
   "name": "WizzGift Docs",
-  "colors": { "primary": "#4C6EF5" },
-
+   "description": "Deliver the full WizzGift gift card, premium catalog, and top-up experience inside your website or application using our secure Integration",
+  "colors": {
+    "primary": "#000000",
+    "light": "#FFFFFF",
+    "dark": "#000000"
+  },
+ "favicon": "/favicon.ico",
   "ai": {
     "enabled": true
+  },
+    "logo": {
+    "light": "/logo.svg",
+    "dark": "/logo-dark.svg",
+    "href": "https://docs.wizzgift.com"
   },
  "contextual": {
    "options": [
@@ -19,16 +29,50 @@
      "vscode"
    ]
  },
-  "navigation": {
-    "pages": ["index"],
-    "groups": [
+    "topbarCtaButton": {
+    "text": "Get Started",
+    "url": "/introduction"
+  },
+  
+    "navigation": {
+    "dropdowns": [
       {
-        "group": "Integration Guides",
-        "pages": ["iframe", "api"]
+        "dropdown": "Introduction",
+        "icon": "book",
+        "description": "Wizzgift Integration",
+        "groups": [
+          {
+            "group": "Getting started",
+            "pages": [
+              "index",
+              "quickstart"
+            ]
+          },
+          {
+            "group": "Customization",
+            "pages": [
+              "settings",
+              "users",
+              "features"
+            ]
+          },
+          {
+            "group": "Billing",
+            "pages": [
+              "billing/overview",
+              "billing/payments",
+              "billing/subscriptions"
+            ]
+          }
+        ]
       },
       {
-        "group": "Developer Tools",
-        "pages": ["webhooks", "errors", "faq"]
+        "dropdown": "Changelog",
+        "icon": "history",
+        "description": "Updates and changes",
+        "pages": [
+          "changelog"
+        ]
       }
     ]
   }
