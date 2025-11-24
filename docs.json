@@ -35,6 +35,10 @@
   },
   "navigation": {
      "tabs": [
+         {
+      "tab": "Documentation", 
+      "pages": ["intro", "quickstart"]
+    },
     {
       "tab": "API Reference",
       "openapi": "openapi.yaml"
