@@ -29,7 +29,7 @@ paths:
   # IFRAME INTEGRATION
   ########################################
 
-  /iframeOrder/getDetails:
+  /b2b/iframeOrder/getDetails:
     post:
       tags:
         - Iframe Integration
@@ -81,7 +81,7 @@ paths:
               example:
                 error: "Missing Authorization header"
 
-  /iframeOrder/doPayment:
+  /b2b/iframeOrder/doPayment:
     post:
       tags:
         - Iframe Integration
@@ -150,7 +150,7 @@ paths:
               summary: Payment result callback from WizzGift
               description: |
                 WizzGift will POST the payment result to the `callback_url` you provided
-                in `/iframeOrder/doPayment`.
+                in `/b2b/iframeOrder/doPayment`.
 
                 The payload includes `meta_data` exactly as you sent it, plus payment status
                 and any additional fields defined by WizzGift.
@@ -485,7 +485,7 @@ components:
         meta_data:
           type: object
           description: |
-            The same meta_data object you submitted in /iframeOrder/doPayment.
+            The same meta_data object you submitted in /b2b/iframeOrder/doPayment.
           additionalProperties: true
       additionalProperties: true
       required:
