@@ -26,7 +26,7 @@ Retrieve all available products at once.
 
 <RequestExample>
 
-```bash request
+```bash curl
 GET /b2b/products HTTP/1.1
 Host: api2.wizzgift.com
 Authorization: Bearer <YOUR_API_KEY>
@@ -43,7 +43,9 @@ This endpoint does not accept any query parameters.
 
 _(Truncated for documentation clarity)_
 
-```
+<ResponseExample>
+
+```json 200 OK
 {
   "success": true,
   "data": [
@@ -102,6 +104,8 @@ _(Truncated for documentation clarity)_
   ]
 }
 ```
+
+</ResponseExample>
 
 ---
 
