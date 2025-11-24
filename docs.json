@@ -36,7 +36,7 @@
   "navigation": {
     "dropdowns": [
       {
-        "dropdown": "Introduction",
+        "dropdown": "Documentation V1.0",
         "icon": "book",
         "description": "Wizzgift Integration",
         "groups": [
