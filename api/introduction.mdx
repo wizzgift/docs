@@ -1,5 +1,62 @@
 ---
-title: 'New file'
-description: 'Description of your new file.'
+title: "API Integration – Introduction"
+description: "Let's proceed with the API introduction"
+sidebarTitle: "introduction"
 ---
 
+This API enables seamless programmatic integration for purchasing gift cards, vouchers, and mobile top-ups directly from your application or backend service.
+
+All requests to the API must be made to the following base URL:
+
+```
+https://api2.wizzgift.com/b2b
+```
+
+## **Prerequisites**
+
+Before initiating any order or performing balance-dependent operations, ensure the following:
+
+### **1. Sufficient Account Balance**
+
+You must maintain an adequate balance in your WizzGift account.\
+Orders will fail automatically if the available balance is insufficient.
+
+### **2. API Credentials**
+
+Your API credentials can be obtained from:
+
+```
+Profile → Developer
+```
+
+You will find your unique **API Key**, which is required for authentication in all requests.
+
+### **3. API Key Security**
+
+Treat your API Key as a confidential credential:
+
+- Do **not** expose it in frontend code or public repositories.
+- Do **not** share it with anyone.
+- Store it only in secure backend environments or encrypted variables.
+
+Any misuse or leakage of the API Key is solely your responsibility.
+
+### **4. No KYC / No Limits**
+
+The WizzGift B2B API is designed for fast and frictionless integration:
+
+- **No KYC required** for API usage.
+- **No daily, weekly, or monthly limits** on API transactions.
+
+You are free to integrate and automate your workflow without restrictions.
+
+---
+
+<Columns cols={2}>
+  <Card title="Products" icon="boxes-packing" href="/api/product">
+    Start with fetching products, this allows you to customize the product your way, check availibility and ensure product is available before placing order.
+  </Card>
+  <Card title="Orders" icon="gifts" href="api/order">
+    Start Placing new gift cards order which simple API calls. You can also check the status of the order, click here to start integration.
+  </Card>
+</Columns>

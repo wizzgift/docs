@@ -6,7 +6,7 @@ mode: "wide"
 
 ## **1. Embedding the Iframe**
 
-```
+```javascript
 <iframe
   src="https://iframe.wizzgift.com/gift-cards?iframeIntegrationId=YOUR_INTEGRATION_ID"
   allow="autoplay; encrypted-media"
@@ -30,7 +30,7 @@ Data payload includes a **JWT token**.
 
 ### **Client-Side Listener Example**
 
-```
+```javascript
 const handleMessage = (event: MessageEvent) => {
   // Validate origin
   if (event.origin !== "https://iframe.wizzgift.com") return;
@@ -59,7 +59,7 @@ window.addEventListener("message", handleMessage);
 
 After decoding the JWT, the structure appears as:
 
-```
+```json
 {
   "checkoutId": "jreH-1baVyfhTNUREYF2R4KP",
   "email": "hello123user@gmail.com",
@@ -81,13 +81,13 @@ You may use this object to:
 
 Once you verify payment from the user, call:
 
-```
+```bash
 POST https://api2.wizzgift.com/b2b/iframeOrder/doPayment
 ```
 
 ### **Request Body**
 
-```
+```json
 {
   "jwt": "JWT_RECEIVED_FROM_IFRAME",
   "callback_url": "https://yourserver.com/wizzgift/orders/webhook",
@@ -101,7 +101,7 @@ POST https://api2.wizzgift.com/b2b/iframeOrder/doPayment
 
 ### **Headers**
 
-```
+```json
 {
   "Content-Type": "application/json",
   "APIKEY": "YOUR_API_KEY_HERE"
@@ -145,19 +145,19 @@ Webhook documentation is available on the next page.
 
 ### **Decode JWT (Node.js Example)**
 
-```
+```javascript
 import jwt from "jsonwebtoken";
 
 const decoded = jwt.decode(orderInfoJWT);
 console.log(decoded);
 ```
 
-```
+```javascript
 $decoded = json_decode(base64_decode(str_replace('_','/',str_replace('-','+',explode('.', $jwt)[1]))));
 print_r($decoded);
 ```
 
-```
+```javascript
 import jwt
 decoded = jwt.decode(jwt_token, options={"verify_signature": False})
 print(decoded)
@@ -167,7 +167,7 @@ print(decoded)
 
 ## **9. Security Recommendations**
 
-```
+```javascript
 if (event.origin !== "https://iframe.wizzgift.com") return;
 ```
 
