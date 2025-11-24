@@ -1,0 +1,72 @@
+---
+title: "Customize Iframe"
+description: "Here is how you can customize iframe for better user experience"
+---
+
+## **1. Base Integration URL**
+
+To embed the WizzGift catalog:
+
+```
+https://iframe.wizzgift.com
+```
+
+## **2. Required & Optional Parameters**
+
+### **Required Parameter**
+
+| Parameter               | Description                                                              |
+| :---------------------- | :----------------------------------------------------------------------- |
+| **iframeIntegrationId** | Unique ID from **Profile → Developers** section of your WizzGift account |
+
+### **Optional Parameters**
+
+| Parameter | Values           | Description                                                |
+| :-------- | :--------------- | :--------------------------------------------------------- |
+| **theme** | `light`, `dark`  | Defaults to the user system preference                     |
+| **os**    | `android`, `ios` | Default: all devices (use only if targeting a specific OS) |
+
+---
+
+## **3. Recommended Path (Best UX)**
+
+We recommend loading the catalog directly:
+
+```
+https://iframe.wizzgift.com/gift-cards?iframeIntegrationId=YOUR_ID
+```
+
+This loads the full gift card marketplace optimized for conversions.
+
+---
+
+## **4. Deep Linking (Specific Product, Recharge, or Category)**
+
+You may open a specific product or category by using its **slug**.
+
+Slugs can be copied from:\
+[**https://www.wizzgift.com**](https://www.wizzgift.com) (product page URL)
+
+![Screenshot2025 11 24111715 Pn](/images/Screenshot2025-11-24111715.png)
+
+### **Examples**
+
+#### **Open Specific Product**
+
+```
+https://iframe.wizzgift.com/gift-cards/apple-gift-card-usa?iframeIntegrationId=YOUR_ID
+```
+
+#### **Open Top-Up Section Only**
+
+```
+https://iframe.wizzgift.com/refill?iframeIntegrationId=YOUR_ID
+```
+
+#### **Open Specific Recharge Provider**
+
+```
+https://iframe.wizzgift.com/recharge/t-mobile-united-states?iframeIntegrationId=YOUR_ID
+```
+
+---

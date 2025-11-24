@@ -1,0 +1,189 @@
+---
+title: "New file"
+description: "Description of your new file."
+---
+
+## **1. Embedding the Iframe**
+
+```
+<iframe
+  src="https://iframe.wizzgift.com/gift-cards?iframeIntegrationId=YOUR_INTEGRATION_ID"
+  allow="autoplay; encrypted-media"
+  style="width:100%; height:800px; border:none;"
+></iframe>
+```
+
+You may modify the `height` based on your UI layout.
+
+---
+
+## **2. Listening to Iframe Events**
+
+When a user initiates an order, the iframe sends a message to the parent window using `postMessage`.
+
+You must listen for:
+
+### **Event Type:** `order-requested`
+
+Data payload includes a **JWT token**.
+
+### **Client-Side Listener Example**
+
+```
+const handleMessage = (event: MessageEvent) => {
+  // Validate origin
+  if (event.origin !== "https://iframe.wizzgift.com") return;
+
+  const data = event.data;
+
+  // Sample structure:
+  // {
+  //   type: "order-requested",
+  //   orderInfo: JWT_ORDER_INFORMATION
+  // }
+
+  if (data?.type === "order-requested") {
+    const jwtToken = data.orderInfo;
+
+    // You may close the iframe and proceed with balance checking or payment
+  }
+};
+
+window.addEventListener("message", handleMessage);
+```
+
+---
+
+## **3. Decrypting the JWT**
+
+After decoding the JWT, the structure appears as:
+
+```
+{
+  "checkoutId": "jreH-1baVyfhTNUREYF2R4KP",
+  "email": "hello123user@gmail.com",
+  "totalAmount": 1.05,
+  "iframeIntegrationId": "your_iframe_integration_id",
+  "iframeIntegration": true
+}
+```
+
+You may use this object to:
+
+- Deduct user balance
+- Initiate payment collection
+- Validate user session
+
+---
+
+## **4. Server-Side Order Confirmation (Process Payment)**
+
+Once you verify payment from the user, call:
+
+```
+POST https://api2.wizzgift.com/b2b/iframeOrder/doPayment
+```
+
+### **Request Body**
+
+```
+{
+  "jwt": "JWT_RECEIVED_FROM_IFRAME",
+  "callback_url": "https://yourserver.com/wizzgift/orders/webhook",
+  "meta_data": {
+    "yourInternalUserId": 12345, //anything you want
+    "reference": "OPTIONAL_REFERENCE",
+    "anything": "ANYTHING"
+  }
+}
+```
+
+### **Headers**
+
+```
+{
+  "Content-Type": "application/json",
+  "APIKEY": "YOUR_API_KEY_HERE"
+}
+```
+
+Get your **API Key** from:\
+**Profile → Developers**
+
+---
+
+## **5. Response Codes**
+
+| Status   | Response                               | Meaning                            |
+| :------- | :------------------------------------- | :--------------------------------- |
+| `200 OK` | `{ "success": true }`                  | Payment accepted, order processing |
+| `400`    | `{ "error": "Failed to get balance" }` | Validation error                   |
+| `400`    | `{ "error": "Insufficient balance" }`  | Not enough WizzGift balance        |
+| `404`    | `{ "error": "Checkout not found" }`    | Invalid or expired checkout        |
+| `404`    | `{ "error": "Unauthorized" }`          | API key missing or incorrect       |
+
+---
+
+## **6. Webhook Handling**
+
+When a payment is accepted, WizzGift will send webhook updates to:
+
+```
+callback_url
+```
+
+Webhook documentation is available on the next page.
+
+---
+
+## **7. Complete Integration Flow**
+
+---
+
+## **8. Example End-to-End Code**
+
+### **Decode JWT (Node.js Example)**
+
+```
+import jwt from "jsonwebtoken";
+
+const decoded = jwt.decode(orderInfoJWT);
+console.log(decoded);
+```
+
+```
+$decoded = json_decode(base64_decode(str_replace('_','/',str_replace('-','+',explode('.', $jwt)[1]))));
+print_r($decoded);
+```
+
+```
+import jwt
+decoded = jwt.decode(jwt_token, options={"verify_signature": False})
+print(decoded)
+```
+
+---
+
+## **9. Security Recommendations**
+
+```
+if (event.origin !== "https://iframe.wizzgift.com") return;
+```
+
+Additional recommendations:
+
+- Do not trust client-side validation alone.
+- Always verify payment server-side before calling `doPayment`.
+- Keep your API key secure and rotate periodically.
+- Use HTTPS for all callback endpoints.
+
+---
+
+## **10. Support**
+
+For technical support or partnership inquiries:
+
+📧 [**support@wizzgift.com**](mailto:dev@wizzgift.com)\
+🌐 [**https://www.wizzgift.com**](https://wizzgift.com)
+
+---
