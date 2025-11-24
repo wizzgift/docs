@@ -37,14 +37,7 @@
      "tabs": [
          {
       "tab": "Documentation", 
-      "pages": ["intro", "quickstart"]
-    },
-    {
-      "tab": "API Reference",
-      "openapi": "openapi.yaml"
-    }
-  ],
-    "dropdowns": [
+      "dropdowns": [
       {
         "dropdown": "Documentation V1.0",
         "icon": "book",
@@ -93,5 +86,12 @@
         ]
       }
     ]
+    },
+    {
+      "tab": "API Reference",
+      "openapi": "openapi.yaml"
+    }
+  ]
+    
   }
 }
