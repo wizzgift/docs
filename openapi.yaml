@@ -23,6 +23,8 @@ tags:
     description: Endpoints for iframe-based payment flows.
   - name: API Integration
     description: Endpoints for direct API / server-to-server integrations.
+  - name: Other tools
+    description: Miscellaneous supporting endpoints (e.g. balance, utilities).
 
 paths:
   ########################################
@@ -566,6 +568,49 @@ paths:
                             type: boolean
                             example: true
 
+  /b2b/get-balance:
+    get:
+      tags:
+        - Other tools
+      summary: Get current balance
+      description: |
+        Returns your current WizzGift balance in multiple currencies.
+
+        Requires a valid API key via Bearer token in the `Authorization` header.
+      operationId: getBalance
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: Current balance in various currencies.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GetBalanceResponse'
+              example:
+                success: true
+                data:
+                  USD: 8774.564620411042
+                  EUR: 7613.356280346775
+                  GBP: 6690.5411762562035
+                  AUD: 13598.197254624982
+                  CAD: 12390.015752621093
+                  INR: 782947.4965183528
+                  LTC: 104.09971076534673
+                  BTC: 0.10003714521247671
+                  USDC: 8774.564620411042
+                  USDT: 8775.39828324795
+                  XRP: 3932.1374055169354
+                  XLM: 34859.74808524492
+        '401':
+          description: Missing or invalid authorization header.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              example:
+                error: "Missing Authorization header"
+
 components:
   securitySchemes:
     bearerAuth:
@@ -1045,3 +1090,35 @@ components:
         - status
         - checkoutId
         - meta_data
+
+    GetBalanceResponse:
+      type: object
+      properties:
+        success:
+          type: boolean
+          example: true
+        data:
+          type: object
+          description: |
+            Balance in multiple currencies.
+
+            Keys are currency codes (e.g. USD, EUR, BTC).
+          additionalProperties:
+            type: number
+            format: float
+          example:
+            USD: 8774.564620411042
+            EUR: 7613.356280346775
+            GBP: 6690.5411762562035
+            AUD: 13598.197254624982
+            CAD: 12390.015752621093
+            INR: 782947.4965183528
+            LTC: 104.09971076534673
+            BTC: 0.10003714521247671
+            USDC: 8774.564620411042
+            USDT: 8775.39828324795
+            XRP: 3932.1374055169354
+            XLM: 34859.74808524492
+      required:
+        - success
+        - data
