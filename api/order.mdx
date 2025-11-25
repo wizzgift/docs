@@ -41,7 +41,8 @@ Creates a checkout for one or more products. The response returns a `checkoutId`
         }
       ]
     }
-  ]
+  ],
+ "emailNotification":false
 }
 ```
 
@@ -50,7 +51,7 @@ Creates a checkout for one or more products. The response returns a `checkoutId`
 | Field  | Type             | Required | Description                                                               |
 | :----- | :--------------- | :------- | :------------------------------------------------------------------------ |
 | `data` | array of objects | Yes      | List of items to include in this order. Maximum **10** items per request. |
-
+| `emailNotification` | boolean | No      | If set to **false** No emails sent regarding Order updates. Default **true**. |
 #### `data[]` item fields
 
 Each object inside `data` represents one product (SKU) in the order.
