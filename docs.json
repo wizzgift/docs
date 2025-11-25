@@ -33,64 +33,118 @@
     "text": "Get Started",
     "url": "/"
   },
-  "navigation": {
-     "tabs": [
-         {
-      "tab": "Documentation", 
-      "dropdowns": [
+  "navbar":{
+    "tabs":[
       {
-        "dropdown": "Documentation V1.0",
-        "icon": "book",
-        "description": "Wizzgift Integration",
-        "groups": [
+        "tab": "Documentation",
+        "dropdowns": [
           {
-            "group": "Getting started",
-            "pages": [
-              "index"
+            "dropdown": "Documentation V1.0",
+            "icon": "book",
+            "description": "Wizzgift Integration",
+            "groups": [
+              {
+                "group": "Getting started",
+                "pages": [
+                  "index"
+                ]
+              },
+              {
+                "group": "Iframe Integration",
+                "pages": [
+                  "iframe/introduction",
+                  "iframe/customization",
+                  "iframe/integration"
+                ]
+              },
+              {
+                "group": "API Integration",
+                "pages": [
+                  "api/introduction",
+                  "api/authentication",
+                  "api/product",
+                  "api/order"
+                ]
+              },
+              {
+                "group": "Dev Tools",
+                "pages": [
+                  "dev/webhook",
+                  "dev/errors",
+                  "dev/request-new-product"
+                ]
+              }
             ]
           },
           {
-            "group": "Iframe Integration",
+            "dropdown": "Changelog",
+            "icon": "history",
+            "description": "Updates and changes",
             "pages": [
-              "iframe/introduction",
-              "iframe/customization",
-              "iframe/integration"
+              "changelog"
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  "navigation": {
+    "tabs": [
+      {
+        "tab": "Documentation",
+        "dropdowns": [
+          {
+            "dropdown": "Documentation V1.0",
+            "icon": "book",
+            "description": "Wizzgift Integration",
+            "groups": [
+              {
+                "group": "Getting started",
+                "pages": [
+                  "index"
+                ]
+              },
+              {
+                "group": "Iframe Integration",
+                "pages": [
+                  "iframe/introduction",
+                  "iframe/customization",
+                  "iframe/integration"
+                ]
+              },
+              {
+                "group": "API Integration",
+                "pages": [
+                  "api/introduction",
+                  "api/authentication",
+                  "api/product",
+                  "api/order"
+                ]
+              },
+              {
+                "group": "Dev Tools",
+                "pages": [
+                  "dev/webhook",
+                  "dev/errors",
+                  "dev/request-new-product"
+                ]
+              }
             ]
           },
           {
-            "group": "API Integration",
+            "dropdown": "Changelog",
+            "icon": "history",
+            "description": "Updates and changes",
             "pages": [
-              "api/introduction",
-              "api/authentication",
-              "api/product",
-              "api/order"
-            ]
-          },
-          {
-            "group": "Dev Tools",
-            "pages": [
-              "dev/webhook",
-              "dev/errors",
-              "dev/request-new-product"
+              "changelog"
             ]
           }
         ]
       },
       {
-        "dropdown": "Changelog",
-        "icon": "history",
-        "description": "Updates and changes",
-        "pages": [
-          "changelog"
-        ]
+        "tab": "API Reference",
+        "openapi": "openapi.yaml"
       }
     ]
-    },
-    {
-      "tab": "API Reference",
-      "openapi": "openapi.yaml"
-    }
-  ]
-    
   }
 }
