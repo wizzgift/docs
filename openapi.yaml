@@ -393,6 +393,7 @@ paths:
           - `quantity`
           - `amount`
         - `requiredFields` is **optional**, but required if the product itself has required fields.
+        - `emailNotification` is **optional**, default **true** if set to false, no email will be sent to you regarding order updates.
       operationId: placeOrder
       security:
         - bearerAuth: []
@@ -411,6 +412,7 @@ paths:
                   requiredFields:
                     - name: "mobile"
                       value: "1203256458"
+              emailNotification: false
       responses:
         '200':
           description: Order accepted and checkout created.
@@ -872,6 +874,11 @@ components:
           maxItems: 10
           items:
             $ref: '#/components/schemas/PlaceOrderItem'
+        emailNotification:
+          type: boolean
+          description: |
+            If set to false, no email will be sent to you regarding order updates.
+          default: true
       required:
         - data
 
