@@ -34,63 +34,21 @@
     "url": "/"
   },
   "navbar":{
-   "tabs": [
-      {
-        "tab": "Documentation",
-        "dropdowns": [
-          {
-            "dropdown": "Documentation V1.0",
-            "icon": "book",
-            "description": "Wizzgift Integration",
-            "groups": [
-              {
-                "group": "Getting started",
-                "pages": [
-                  "index"
-                ]
-              },
-              {
-                "group": "Iframe Integration",
-                "pages": [
-                  "iframe/introduction",
-                  "iframe/customization",
-                  "iframe/integration"
-                ]
-              },
-              {
-                "group": "API Integration",
-                "pages": [
-                  "api/introduction",
-                  "api/authentication",
-                  "api/product",
-                  "api/order"
-                ]
-              },
-              {
-                "group": "Dev Tools",
-                "pages": [
-                  "dev/webhook",
-                  "dev/errors",
-                  "dev/request-new-product"
-                ]
-              }
-            ]
-          },
-          {
-            "dropdown": "Changelog",
-            "icon": "history",
-            "description": "Updates and changes",
-            "pages": [
-              "changelog"
-            ]
-          }
-        ]
-      },
-      {
-        "tab": "API Reference",
-        "openapi": "openapi.yaml"
-      }
-    ]
+   "links":[
+     {
+       "label":"Docs",
+       "href":"https://docs.wizzgift.com"
+     },
+     {
+       "label":"API reference",
+       "href":"https://docs.wizzgift.com/api-reference"
+     }
+   ],
+    "primary":{
+      "type":"button",
+      "label":"Get Started",
+      "href":"https://www.wizzgift.com"
+    }
   },
   "navigation": {
     "tabs": [
