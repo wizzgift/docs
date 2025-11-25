@@ -36,12 +36,12 @@
   "navbar":{
    "links":[
      {
-       "label":"Docs",
-       "href":"https://docs.wizzgift.com"
+       "label":"Live Chat",
+       "href":"https://help.wizzgift.com"
      },
      {
-       "label":"API reference",
-       "href":"https://docs.wizzgift.com/api-reference"
+       "label":"Email us",
+       "href":"mailto:support@wizzgift.com?subject=Integration%20Support%20Needed"
      }
    ],
     "primary":{
