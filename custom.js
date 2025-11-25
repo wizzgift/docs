@@ -1,4 +1,4 @@
-<script>
+
   (function(d,t) {
     var BASE_URL="https://desk.sapniverse.com";
     var g=d.createElement(t),s=d.getElementsByTagName(t)[0];
@@ -12,4 +12,3 @@
       })
     }
   })(document,"script");
-</script>
