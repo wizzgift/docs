@@ -12,3 +12,7 @@
       })
     }
   })(document,"script");
+
+window.chatwootSettings = {
+  darkMode: "auto",
+};
