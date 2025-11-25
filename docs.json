@@ -34,7 +34,7 @@
     "url": "/"
   },
   "navbar":{
-    "tabs":[
+   "tabs": [
       {
         "tab": "Documentation",
         "dropdowns": [
@@ -85,6 +85,10 @@
             ]
           }
         ]
+      },
+      {
+        "tab": "API Reference",
+        "openapi": "openapi.yaml"
       }
     ]
   },
